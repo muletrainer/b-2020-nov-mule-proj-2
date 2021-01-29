@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="47a9a0fc-0906-4245-8086-5b467156553f" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="b-fileread-filewriteFlow" doc:id="0c802908-734d-4463-99a2-8b568c69d623" >
+		<http:listener doc:name="Listener" doc:id="01e89619-c0ae-4c57-b9b5-811f99c6d199" config-ref="HTTP_Listener_config" path="/fileread"/>
+		<set-variable value="#[attributes.queryParams.filename]" doc:name="Set Variable" doc:id="841c1dbb-3ebf-4001-aa6c-3e3a23618b97" variableName="fileName"/>
+		<logger level="INFO" doc:name="Logger" doc:id="36747e73-dd88-469a-ba8e-484b957b01f8" message="#[vars.fileName]"/>
+		<file:read doc:name="Read" doc:id="f617ceee-ed7f-4515-9cee-32540837e60e" config-ref="File_Config" path='#["D:\\Technologies\\Mule\\Training\\MyPersonal\\FilePoller\\in\\" ++ vars.fileName]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="ca94c002-c1eb-4347-9de2-ebe4aa587e85" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="9ca55002-5cc1-4668-9f57-811978fe87ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	sno: payload01.sno,
+	sname: payload01.sname,
+	marks: (payload01.m1default 0) + payload01.m2
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f5555b67-cd8d-44fe-88cc-e324f4d2f4f4" message="#[payload]" />
+		<file:write doc:name="Write" doc:id="49cddb82-4921-4a62-b323-b55005335887" config-ref="File_Config" path='#["D:\\Technologies\\Mule\\Training\\MyPersonal\\FilePoller\\out\\" ++ attributes.fileName]'>
+		</file:write>
+		<logger level="INFO" doc:name="Logger" doc:id="d2273140-8250-40a2-87ef-fbd10d0e9d27" />
+	</flow>
+</mule>

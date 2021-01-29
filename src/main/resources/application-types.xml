@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="file-in" format="csv">
+      <types:shape format="weave" example="examples/students-in.csv"><![CDATA[%dw 2.0
+
+type file_in = Array<{|  sno: Number,   sname: String,   m1: Number,   m2: Number|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="file-out" format="csv">
+      <types:shape format="weave" example="examples/students-out.csv"><![CDATA[%dw 2.0
+
+type file_out = Array<{|  sno: Number,   sname: String,   marks: Number|}> {"isQuotedString": "false",
+"header": "true",
+"headerLineNumber": "0"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#f617ceee-ed7f-4515-9cee-32540837e60e">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="file-in"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#49cddb82-4921-4a62-b323-b55005335887">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="file-out"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

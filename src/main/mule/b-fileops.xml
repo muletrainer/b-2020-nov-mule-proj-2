@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="8190bf30-828d-4f7b-9e14-5863c7b69a3f" />
+	<flow name="b-fileopsFlow1" doc:id="adc6fc29-ccca-4942-8780-d094a76b0c24" initialState="stopped">
+		<file:listener doc:name="On New or Updated File" doc:id="2362286b-f39c-418f-a6fc-c1513a327ac3" config-ref="File_Config" directory="D:\Technologies\Mule\Training\MyPersonal\FilePoller\in">
+			<scheduling-strategy >
+				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
+			</scheduling-strategy>
+			<file:matcher filenamePattern="*.csv" />
+		</file:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="becc7762-b55f-4237-8c35-7852d1612bed" message="---- File Polled ----"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e605b310-991f-4e8c-88e8-8c91ba061ecf" message="#[attributes]"/>
+		<file:move doc:name="Move" doc:id="bbfd442d-1d7c-4e8b-a585-7c25fc26d3cc" config-ref="File_Config" targetPath="D:\Technologies\Mule\Training\MyPersonal\FilePoller\archive" sourcePath="#[attributes.path]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d2f5ad01-90c6-4eb6-a92b-03b99c51188d" message="---- File Moved ----" />
+	</flow>
+</mule>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="b-fileread-filewrite-suite.xml" />
+	<munit:test name="b-fileread-filewriteFlow-test" doc:id="85e4f6c7-d14f-4f5d-8f56-a24b6dba22df" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Write" doc:id="0a2133fc-ad45-4e82-84f9-871c7abfd6d8" processor="file:write">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="49cddb82-4921-4a62-b323-b55005335887" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/csv --- readUrl('classpath://bfilereadfilewriteFlowtest\mock_payload.dwl')]" mediaType="application/csv" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://bfilereadfilewriteFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="fileName" value="#[output application/java --- readUrl('classpath://bfilereadfilewriteFlowtest\mock_variable_.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock Read" doc:id="0845575b-38a6-4119-bcd7-d467ab22be5e" processor="file:read">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f617ceee-ed7f-4515-9cee-32540837e60e" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output text/csv --- readUrl('classpath://bfilereadfilewriteFlowtest\mock_payload1.dwl')]" mediaType="text/csv" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="629865c3-fd8f-4973-aed4-236e92579167" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9ca55002-5cc1-4668-9f57-811978fe87ed" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="41fe6308-96d3-4ecf-8bac-84426ae1f68d" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bfilereadfilewriteFlowtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="da1b8c66-7882-4457-9541-3645d74958e5" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bfilereadfilewriteFlowtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:spy doc:name="Spy Set Variable" doc:id="02a8ed63-719c-4c4f-841e-240e18d990a1" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="841c1dbb-3ebf-4001-aa6c-3e3a23618b97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert attributes" doc:id="34b33903-6e66-45ce-89f5-68557762b665" message="The attributes do not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bfilereadfilewriteFlowtest::spy_assert_attributes
+---
+spy_assert_attributes::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert variables" doc:id="2a038381-91b6-4a87-8117-6cd7b6e7f3c7" message="The variables do not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bfilereadfilewriteFlowtest::spy_assert_variables
+---
+spy_assert_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="33c626e9-3826-4be2-bce2-3306752a0311" >
+				<munit:attributes value="#[readUrl('classpath://bfilereadfilewriteFlowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to b-fileread-filewriteFlow" doc:id="a2316631-19e1-48af-8553-1d38d223fce6" name="b-fileread-filewriteFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="fe0f0f3e-e1e6-42eb-acc9-2381f44d22d0" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="9ca55002-5cc1-4668-9f57-811978fe87ed" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Set Variable" doc:id="a44eb1a7-e855-44e9-a31f-fa2d94fab669" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="841c1dbb-3ebf-4001-aa6c-3e3a23618b97" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
