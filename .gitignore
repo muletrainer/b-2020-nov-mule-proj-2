@@ -25,7 +25,7 @@ local.properties
 .loadpath
 .project
 .classpath
-
+reports/**
 # External tool builders
 .externalToolBuilders/
 
